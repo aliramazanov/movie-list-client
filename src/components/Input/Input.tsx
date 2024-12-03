@@ -4,15 +4,45 @@ interface InputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   required?: boolean;
+  error?: string;
+  name: string;
+  onBlur?: (name: string) => void;
 }
 
-export const Input: React.FC<InputProps> = ({ type, value, onChange, placeholder, required = false }) => (
-  <input
-    type={type}
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
-    className="w-full h-[54px] bg-input text-white rounded-[10px] px-[15px] placeholder-gray-400 focus:outline-none text-body-regular"
-    required={required}
-  />
+export const Input: React.FC<InputProps> = ({
+  type,
+  value,
+  onChange,
+  placeholder,
+  required = false,
+  error,
+  name,
+  onBlur,
+}) => (
+  <div className="w-full">
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      onBlur={() => onBlur?.(name)}
+      placeholder={placeholder}
+      name={name}
+      className={`
+        w-full 
+        h-[54px] 
+        bg-input 
+        text-white 
+        rounded-[10px] 
+        px-[15px] 
+        text-body-regular
+        focus:outline-none
+        ${error ? "border border-error" : ""}
+        placeholder:text-gray-400
+        placeholder:opacity-70
+        placeholder:text-body-regular
+      `}
+      required={required}
+    />
+    {error && <p className="text-error text-body-small mt-1">{error}</p>}
+  </div>
 );
