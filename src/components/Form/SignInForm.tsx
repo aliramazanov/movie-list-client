@@ -1,50 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ApiError, loginApi } from "../../services/api";
+import { useAuthStore } from "../../store/authStore";
+import { storageUtils } from "../../utils/localStorage";
 import Primary from "../Button/Primary";
 import { Checkbox } from "../Checkbox/Checkbox";
 import { Input } from "../Input/Input";
 
 interface FormErrors {
-  email?: string;
+  username?: string;
   password?: string;
+  general?: string;
 }
 
-interface SignInFormProps {
-  onSubmit: (email: string, password: string, rememberMe: boolean) => void;
-}
+export const SignInForm: React.FC = () => {
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
-interface FormErrors {
-  email?: string;
-  password?: string;
-}
-
-export const SignInForm: React.FC<SignInFormProps> = ({ onSubmit }) => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
 
-  const validateField = (name: string, value: string) => {
+  useEffect(() => {
+    const rememberedCredentials = storageUtils.getRememberMe();
+    if (rememberedCredentials) {
+      setUsername(rememberedCredentials.username);
+      setPassword(rememberedCredentials.password);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const validateField = (name: string, value: string): string | undefined => {
     if (!value && touchedFields.has(name)) {
       return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
     }
-
-    if (name === "email" && value && touchedFields.has(name)) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        return "Please enter a valid email";
-      }
-    }
-
     return undefined;
   };
 
-  const handleBlur = (fieldName: string) => {
+  const handleBlur = (fieldName: string): void => {
     const newTouchedFields = new Set(touchedFields);
     newTouchedFields.add(fieldName);
     setTouchedFields(newTouchedFields);
 
-    const value = fieldName === "email" ? email : password;
+    const value = fieldName === "username" ? username : password;
     const error = validateField(fieldName, value);
 
     setErrors((prev) => ({
@@ -53,35 +54,55 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    setIsLoading(true);
 
-    const allFields = new Set(["email", "password"]);
+    const allFields = new Set(["username", "password"]);
     setTouchedFields(allFields);
 
     const newErrors: FormErrors = {
-      email: validateField("email", email),
+      username: validateField("username", username),
       password: validateField("password", password),
     };
 
     setErrors(newErrors);
 
-    if (!newErrors.email && !newErrors.password) {
-      onSubmit(email, password, rememberMe);
+    if (!newErrors.username && !newErrors.password) {
+      try {
+        const response = await loginApi(username, password);
+
+        if (rememberMe) {
+          storageUtils.setRememberMe(username, password);
+        } else {
+          storageUtils.clearRememberMe();
+        }
+
+        login(response.token, response.user);
+        navigate("/my-movies");
+      } catch (error) {
+        const apiError = error as ApiError;
+        setErrors((prev) => ({
+          ...prev,
+          general: apiError.message,
+        }));
+      }
     }
+    setIsLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 w-full">
+      {errors.general && <div className="text-error text-body-small text-center">{errors.general}</div>}
       <div>
         <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
           required
-          error={errors.email}
-          name="email"
+          error={errors.username}
+          name="username"
           onBlur={handleBlur}
         />
       </div>
@@ -104,7 +125,9 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onSubmit }) => {
           label="Remember me"
         />
       </div>
-      <Primary type="submit">Login</Primary>
+      <Primary type="submit" disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Login"}
+      </Primary>
     </form>
   );
 };
