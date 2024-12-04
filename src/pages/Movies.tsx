@@ -136,7 +136,7 @@ const Movies = () => {
           variants={headerVariants}
           initial="hidden"
           animate="show"
-          className="flex justify-between items-center py-8 px-6 md:px-12 lg:px-16"
+          className="flex justify-between items-center py-8 px-6 mb-10 md:px-12 lg:px-16"
         >
           <h1 className="text-white text-heading-2 md:text-heading-1 font-semibold flex items-center gap-3">
             My movies
