@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthFormErrors } from "../../definitions";
@@ -8,6 +9,18 @@ import { storageUtils } from "../../utils/localStorage";
 import Primary from "../Button/Primary";
 import { Checkbox } from "../Checkbox/Checkbox";
 import { Input } from "../Input/Input";
+
+const formVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      delay: 0.2,
+    },
+  },
+};
 
 export const SignInForm: React.FC = () => {
   const navigate = useNavigate();
@@ -106,9 +119,23 @@ export const SignInForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 w-full">
-      {errors.general && <div className="text-error text-body-small text-center">{errors.general}</div>}
-      <div>
+    <motion.form
+      variants={formVariants}
+      initial="hidden"
+      animate="show"
+      onSubmit={handleSubmit}
+      className="space-y-4 md:space-y-6 w-full"
+    >
+      {errors.general && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-error text-body-small text-center"
+        >
+          {errors.general}
+        </motion.div>
+      )}
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
         <Input
           type="text"
           value={username}
@@ -119,8 +146,8 @@ export const SignInForm: React.FC = () => {
           name="username"
           onBlur={handleBlur}
         />
-      </div>
-      <div>
+      </motion.div>
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
         <Input
           type="password"
           value={password}
@@ -131,17 +158,24 @@ export const SignInForm: React.FC = () => {
           name="password"
           onBlur={handleBlur}
         />
-      </div>
-      <div className="flex justify-center items-center">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5 }}
+        className="flex justify-center items-center"
+      >
         <Checkbox
           checked={rememberMe}
           onChange={(e) => setRememberMe(e.target.checked)}
           label="Remember me"
         />
-      </div>
-      <Primary type="submit" disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Login"}
-      </Primary>
-    </form>
+      </motion.div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+        <Primary type="submit" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Login"}
+        </Primary>
+      </motion.div>
+    </motion.form>
   );
 };

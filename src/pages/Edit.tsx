@@ -1,4 +1,5 @@
 import { ArrowDown } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -140,64 +141,118 @@ const Edit = () => {
     });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4 },
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center relative px-4 md:px-8 lg:px-12">
-      <div className="w-full max-w-[480px] md:max-w-[920px] mx-auto">
-        <h1 className="text-white text-heading-3 md:text-heading-2 font-semibold text-center mb-12">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-background flex flex-col items-center justify-center relative px-4 md:px-8 lg:px-12"
+    >
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="w-full max-w-[480px] md:max-w-[920px] mx-auto"
+      >
+        <motion.h1
+          variants={itemVariants}
+          className="text-white text-heading-3 md:text-heading-2 font-semibold text-center mb-12"
+        >
           Edit movie
-        </h1>
+        </motion.h1>
 
         <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-[400px]">
+          <motion.div variants={itemVariants} className="w-full md:w-[400px]">
             <div
               {...getRootProps()}
               className={`
-                aspect-square
-                border-2 border-dashed rounded-lg
-                flex flex-col items-center justify-center
-                cursor-pointer
-                transition-colors
-                ${isDragActive ? "border-primary bg-input/50" : "border-input bg-input/30"}
-                ${errors.poster ? "border-error" : ""}
-              `}
+    aspect-square
+    border-2 border-dashed rounded-lg
+    flex flex-col items-center justify-center
+    cursor-pointer
+    transition-all
+    hover:scale-[1.02]
+    active:scale-[0.98]
+    ${isDragActive ? "border-primary bg-input/50" : "border-input bg-input/30"}
+    ${errors.poster ? "border-error" : ""}
+  `}
             >
               <input {...getInputProps()} />
               {selectedFile || currentPoster ? (
-                <div className="w-full h-full p-2">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full h-full p-2">
                   <img
                     src={selectedFile ? URL.createObjectURL(selectedFile) : currentPoster}
                     alt="Preview"
                     className="w-full h-full object-contain"
                   />
-                </div>
+                </motion.div>
               ) : (
-                <div className="flex flex-col items-center text-white/70">
+                <motion.div
+                  animate={{ y: isDragActive ? -10 : 0 }}
+                  className="flex flex-col items-center text-white/70"
+                >
                   <ArrowDown className="w-8 h-8 mb-2" />
                   <p className="text-body-regular text-center">
                     {isDragActive ? "Drop image here" : "Drop an image here"}
                   </p>
-                </div>
+                </motion.div>
               )}
             </div>
-            {errors.poster && <p className="text-error text-body-small mt-1">{errors.poster}</p>}
-          </div>
+            {errors.poster && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-error text-body-small mt-1"
+              >
+                {errors.poster}
+              </motion.p>
+            )}
+          </motion.div>
 
-          <div className="flex-1 space-y-6">
+          <motion.div variants={itemVariants} className="flex-1 space-y-6">
             {errors.general && (
-              <div className="text-error text-body-small text-center mb-4">{errors.general}</div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-error text-body-small text-center mb-4"
+              >
+                {errors.general}
+              </motion.div>
             )}
 
-            <Input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={() => handleBlur("title")}
-              placeholder="Title"
-              error={errors.title}
-              name="title"
-            />
+            <motion.div variants={itemVariants}>
+              <Input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={() => handleBlur("title")}
+                placeholder="Title"
+                error={errors.title}
+                name="title"
+              />
+            </motion.div>
 
-            <div className="lg:w-3/5 md:w-3/5 sm:w-full">
+            <motion.div variants={itemVariants} className="lg:w-3/5 md:w-3/5 sm:w-full">
               <Input
                 type="text"
                 value={year}
@@ -207,26 +262,28 @@ const Edit = () => {
                 error={errors.year}
                 name="year"
               />
-            </div>
+            </motion.div>
 
-            <div className="flex gap-4 pt-8">
-              <button
+            <motion.div variants={itemVariants} className="flex gap-4 pt-8">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleCancel}
                 className="flex-1 h-[54px] border border-white/20 text-white rounded-[10px] text-body-regular font-medium hover:bg-white/5 transition-colors"
               >
                 Cancel
-              </button>
+              </motion.button>
               <div className="flex-1">
                 <Primary onClick={handleSubmit} disabled={isLoading}>
                   {isLoading ? "Updating..." : "Update"}
                 </Primary>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
       <WaveDecoration />
-    </div>
+    </motion.div>
   );
 };
 

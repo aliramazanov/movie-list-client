@@ -1,7 +1,11 @@
+import { motion } from "motion/react";
 import { PrimaryProps } from "../../definitions";
 
 const Primary: React.FC<PrimaryProps> = ({ type = "button", onClick, children, disabled = false }) => (
-  <button
+  <motion.button
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    transition={{ duration: 0.2 }}
     type={type}
     onClick={onClick}
     disabled={disabled}
@@ -19,7 +23,7 @@ const Primary: React.FC<PrimaryProps> = ({ type = "button", onClick, children, d
     `}
   >
     {children}
-  </button>
+  </motion.button>
 );
 
 export default Primary;

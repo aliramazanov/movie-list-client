@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { InputProps } from "../../definitions";
 
 export const Input: React.FC<InputProps> = ({
@@ -11,7 +12,9 @@ export const Input: React.FC<InputProps> = ({
   onBlur,
 }) => (
   <div className="w-full">
-    <input
+    <motion.input
+      whileFocus={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
       type={type}
       value={value}
       onChange={onChange}
@@ -34,6 +37,14 @@ export const Input: React.FC<InputProps> = ({
       `}
       required={required}
     />
-    {error && <p className="text-error text-body-small mt-1">{error}</p>}
+    {error && (
+      <motion.p
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-error text-body-small mt-1"
+      >
+        {error}
+      </motion.p>
+    )}
   </div>
 );
