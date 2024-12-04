@@ -1,7 +1,6 @@
 import { LoginResponse } from "../types/auth";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
-
+const API_BASE_URL = import.meta.env.VITE_API_URL?.trim();
 export class ApiError extends Error {
   constructor(message: string, public status?: number, public code?: string) {
     super(message);
@@ -12,7 +11,7 @@ export class ApiError extends Error {
 export const loginApi = async (username: string, password: string): Promise<LoginResponse> => {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
