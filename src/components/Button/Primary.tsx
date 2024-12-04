@@ -1,9 +1,4 @@
-interface PrimaryProps {
-  type?: "button" | "submit" | "reset";
-  onClick?: () => void;
-  children: React.ReactNode;
-  disabled?: boolean;
-}
+import { PrimaryProps } from "../../definitions";
 
 const Primary: React.FC<PrimaryProps> = ({ type = "button", onClick, children, disabled = false }) => (
   <button

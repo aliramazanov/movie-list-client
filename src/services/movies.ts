@@ -1,36 +1,6 @@
+import { MoviePaginationResponse, MovieQueryParams, MovieResponse } from "../definitions";
 import { ApiError } from "./api";
 import { API_BASE_URL } from "./base-url";
-
-export interface MovieResponse {
-  id: string;
-  title: string;
-  year: number;
-  poster?: string;
-  userId: string;
-  createdAt: Date;
-}
-
-export interface MoviePaginationResponse {
-  movies: MovieResponse[];
-  total: number;
-  totalMovies: number;
-  page: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  nextPage: number | null;
-  prevPage: number | null;
-}
-
-export type MovieSortBy = "createdAt" | "title" | "year";
-
-interface MovieQueryParams {
-  search?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: MovieSortBy;
-  order?: "asc" | "desc";
-}
 
 export const moviesApi = {
   getMovies: async (token: string, params: MovieQueryParams = {}): Promise<MoviePaginationResponse> => {

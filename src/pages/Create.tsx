@@ -5,15 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { WaveDecoration } from "../components/Additional/WaveDecoration";
 import Primary from "../components/Button/Primary";
 import { Input } from "../components/Input/Input";
+import { FormErrors } from "../definitions";
 import { moviesApi } from "../services/movies";
 import { useAuthStore } from "../store/authStore";
-
-interface FormErrors {
-  title?: string;
-  year?: string;
-  poster?: string;
-  general?: string;
-}
 
 const Create = () => {
   const navigate = useNavigate();

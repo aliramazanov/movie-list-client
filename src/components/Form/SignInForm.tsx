@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthFormErrors } from "../../definitions";
 import { ApiError, loginApi } from "../../services/api";
 import { moviesApi } from "../../services/movies";
 import { useAuthStore } from "../../store/authStore";
@@ -8,12 +9,6 @@ import Primary from "../Button/Primary";
 import { Checkbox } from "../Checkbox/Checkbox";
 import { Input } from "../Input/Input";
 
-interface FormErrors {
-  username?: string;
-  password?: string;
-  general?: string;
-}
-
 export const SignInForm: React.FC = () => {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
@@ -21,7 +16,7 @@ export const SignInForm: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<AuthFormErrors>({});
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
@@ -63,7 +58,7 @@ export const SignInForm: React.FC = () => {
     const allFields = new Set(["username", "password"]);
     setTouchedFields(allFields);
 
-    const newErrors: FormErrors = {
+    const newErrors: AuthFormErrors = {
       username: validateField("username", username),
       password: validateField("password", password),
     };

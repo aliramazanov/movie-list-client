@@ -1,4 +1,4 @@
-import { LoginResponse } from "../types/auth";
+import { LoginResponse } from "../definitions";
 import { API_BASE_URL } from "./base-url";
 
 export class ApiError extends Error {

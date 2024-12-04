@@ -1,14 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { User } from "../types/auth";
-
-interface AuthState {
-  token: string | null;
-  isAuthenticated: boolean;
-  user: User | null;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-}
+import { AuthState, User } from "../definitions";
 
 const initialState: Omit<AuthState, "login" | "logout"> = {
   token: null,

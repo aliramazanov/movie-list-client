@@ -1,8 +1,4 @@
-interface CheckboxProps {
-  checked: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  label: string;
-}
+import { CheckboxProps } from "../../definitions";
 
 export const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label }) => (
   <label className="flex items-center cursor-pointer">

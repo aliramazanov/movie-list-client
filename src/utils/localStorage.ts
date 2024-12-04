@@ -1,7 +1,4 @@
-interface RememberedCredentials {
-  username: string;
-  password: string;
-}
+import { RememberedCredentials } from "../definitions";
 
 export const storageUtils = {
   setRememberMe: (username: string, password: string): void => {
