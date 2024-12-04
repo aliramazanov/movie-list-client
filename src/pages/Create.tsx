@@ -6,18 +6,16 @@ import { ImageDropzone } from "../components/DropZone/ImageDropZone";
 import { Input } from "../components/Input/Input";
 import { PageWrapper } from "../components/Wrapper/PageWrapper";
 import { FormErrors } from "../definitions";
-import { moviesApi } from "../services/movies";
-import { useAuthStore } from "../store/authStore";
+import { useCreateMovie } from "../hooks/mutations/useMovieMutations";
 
 const Create = () => {
   const navigate = useNavigate();
-  const token = useAuthStore((state) => state.token);
+  const { mutate: createMovie, isPending } = useCreateMovie();
 
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   const containerVariants = {
@@ -99,28 +97,27 @@ const Create = () => {
     return Object.keys(newErrors).filter((key) => !!newErrors[key as keyof FormErrors]).length === 0;
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm() || !token) return;
+  const handleSubmit = () => {
+    if (!validateForm()) return;
 
-    setIsLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("year", year);
-      if (selectedFile) {
-        formData.append("poster", selectedFile);
-      }
-
-      await moviesApi.createMovie(token, formData);
-      navigate("/my-movies");
-    } catch (error) {
-      setErrors((prev) => ({
-        ...prev,
-        general: `Failed to create movie. Please try again. ${(error as Error).message}`,
-      }));
-    } finally {
-      setIsLoading(false);
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("year", year);
+    if (selectedFile) {
+      formData.append("poster", selectedFile);
     }
+
+    createMovie(formData, {
+      onSuccess: () => {
+        navigate("/my-movies");
+      },
+      onError: (error) => {
+        setErrors((prev) => ({
+          ...prev,
+          general: error instanceof Error ? error.message : "Failed to create movie",
+        }));
+      },
+    });
   };
 
   const handleCancel = () => {
@@ -194,8 +191,8 @@ const Create = () => {
                 Cancel
               </motion.button>
               <div className="flex-1">
-                <Primary onClick={handleSubmit} disabled={isLoading}>
-                  {isLoading ? "Creating..." : "Submit"}
+                <Primary onClick={handleSubmit} disabled={isPending}>
+                  {isPending ? "Creating..." : "Submit"}
                 </Primary>
               </div>
             </motion.div>

@@ -1,9 +1,9 @@
 import { User } from "./auth.types.";
 
-export interface AuthState {
+export interface AuthSlice {
   token: string | null;
-  isAuthenticated: boolean;
   user: User | null;
+  isAuthenticated: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
 }

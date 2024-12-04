@@ -6,43 +6,31 @@ import { ImageDropzone } from "../components/DropZone/ImageDropZone";
 import { Input } from "../components/Input/Input";
 import { PageWrapper } from "../components/Wrapper/PageWrapper";
 import { FormErrors } from "../definitions";
-import { moviesApi } from "../services/movies";
-import { useAuthStore } from "../store/authStore";
+import { useUpdateMovie } from "../hooks/mutations/useMovieMutations";
+import { useMovie } from "../hooks/queries/useMovies";
 
 const Edit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const token = useAuthStore((state) => state.token);
+
+  const { data: movie, isLoading: isLoadingMovie } = useMovie(id!);
+  const { mutate: updateMovie, isPending } = useUpdateMovie();
 
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [currentPoster, setCurrentPoster] = useState<string>("");
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const fetchMovie = async () => {
-      if (!token || !id) return;
-
-      try {
-        const movie = await moviesApi.getMovie(token, id);
-        setTitle(movie.title);
-        setYear(movie.year.toString());
-        setCurrentPoster(movie.poster || "");
-      } catch (error) {
-        setErrors((prev) => ({
-          ...prev,
-          general: `Failed to fetch movie details ${error}`,
-        }));
-        navigate(-1);
-      }
-    };
-
-    fetchMovie();
-  }, [token, id, navigate]);
+    if (movie) {
+      setTitle(movie.title);
+      setYear(movie.year.toString());
+      setCurrentPoster(movie.poster || "");
+    }
+  }, [movie]);
 
   const validateField = (name: string, value: string): string | undefined => {
     if (!value && touchedFields.has(name)) {
@@ -99,30 +87,32 @@ const Edit = () => {
     return !Object.values(newErrors).some(Boolean);
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm() || !token || !id) return;
+  const handleSubmit = () => {
+    if (!validateForm() || !id) return;
 
-    setIsLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("year", year);
-      if (selectedFile) {
-        formData.append("poster", selectedFile);
-      }
-
-      await moviesApi.updateMovie(token, id, formData);
-      navigate(location.state?.from || "/my-movies", {
-        state: { page: location.state?.page },
-      });
-    } catch (error) {
-      setErrors((prev) => ({
-        ...prev,
-        general: `Failed to update movie. Please try again. ${(error as Error).message}`,
-      }));
-    } finally {
-      setIsLoading(false);
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("year", year);
+    if (selectedFile) {
+      formData.append("poster", selectedFile);
     }
+
+    updateMovie(
+      { id, formData },
+      {
+        onSuccess: () => {
+          navigate(location.state?.from || "/my-movies", {
+            state: { page: location.state?.page },
+          });
+        },
+        onError: (error) => {
+          setErrors((prev) => ({
+            ...prev,
+            general: error instanceof Error ? error.message : "Failed to update movie",
+          }));
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
@@ -150,6 +140,14 @@ const Edit = () => {
       transition: { duration: 0.4 },
     },
   };
+
+  if (isLoadingMovie) {
+    return (
+      <PageWrapper className="items-center justify-center">
+        <p className="text-white text-body-large">Loading...</p>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper className="items-center justify-center px-4 md:px-8 lg:px-12">
@@ -220,8 +218,8 @@ const Edit = () => {
                 Cancel
               </motion.button>
               <div className="flex-1">
-                <Primary onClick={handleSubmit} disabled={isLoading}>
-                  {isLoading ? "Updating..." : "Update"}
+                <Primary onClick={handleSubmit} disabled={isPending}>
+                  {isPending ? "Updating..." : "Update"}
                 </Primary>
               </div>
             </motion.div>
