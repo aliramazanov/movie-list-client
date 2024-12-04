@@ -1,4 +1,4 @@
-import { ApiError } from "./api";
+import { API_BASE_URL, ApiError } from "./api";
 
 export interface MovieResponse {
   id: string;
@@ -60,6 +60,11 @@ export const moviesApi = {
       }
 
       const data = await response.json();
+
+      if (!data.movies || !Array.isArray(data.movies) || typeof data.total !== "number") {
+        throw new ApiError("Invalid response format");
+      }
+
       return data as MoviePaginationResponse;
     } catch (error) {
       if (error instanceof ApiError) {
@@ -77,7 +82,7 @@ export const moviesApi = {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/movie/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/movie/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

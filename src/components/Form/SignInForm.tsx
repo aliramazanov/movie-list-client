@@ -82,13 +82,18 @@ export const SignInForm: React.FC = () => {
 
         login(loginResponse.token, loginResponse.user);
 
-        try {
-          const moviesData = await moviesApi.getMovies(loginResponse.token);
+        const currentPage = 1;
 
-          if (moviesData.totalMovies === 0) {
-            navigate("/empty");
-          } else {
+        try {
+          const moviesData = await moviesApi.getMovies(loginResponse.token, {
+            page: currentPage,
+            limit: 8,
+          });
+
+          if (moviesData && moviesData.movies && moviesData.movies.length > 0) {
             navigate("/my-movies");
+          } else {
+            navigate("/empty");
           }
         } catch (error) {
           console.error("Failed to fetch movies:", error);
