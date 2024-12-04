@@ -1,6 +1,6 @@
 import { LoginResponse } from "../types/auth";
+import { API_BASE_URL } from "./base-url";
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL?.trim();
 export class ApiError extends Error {
   constructor(message: string, public status?: number, public code?: string) {
     super(message);

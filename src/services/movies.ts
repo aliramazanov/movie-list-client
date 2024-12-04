@@ -1,4 +1,5 @@
-import { API_BASE_URL, ApiError } from "./api";
+import { ApiError } from "./api";
+import { API_BASE_URL } from "./base-url";
 
 export interface MovieResponse {
   id: string;

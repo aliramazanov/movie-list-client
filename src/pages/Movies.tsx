@@ -79,7 +79,7 @@ const Movies = () => {
           </button>
         </h1>
         <button onClick={handleLogout} className="text-white hover:text-white/80 transition-colors">
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-6 h-6 mt-5 ml-3" />
         </button>
       </div>
 
@@ -99,7 +99,7 @@ const Movies = () => {
                 duration-200
                 group
                 p-3
-                hover:bg-card/80
+                hover:bg-card/40
               "
             >
               <div className="aspect-[3/4] relative rounded-2xl overflow-hidden">
