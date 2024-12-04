@@ -68,7 +68,7 @@ const Movies = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background pt-8">
       <div className="max-w-[1440px] mx-auto">
         <div className="flex justify-between items-center py-8 px-6 md:px-12 lg:px-16">
           <h1 className="text-white text-heading-2 md:text-heading-1 font-semibold flex items-center gap-3">
@@ -86,7 +86,8 @@ const Movies = () => {
         </div>
 
         <div className="px-6 md:px-12 lg:px-16 pb-[280px]">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {" "}
             {movies.map((movie) => (
               <div
                 key={movie.id}
@@ -103,7 +104,7 @@ const Movies = () => {
                   hover:bg-card/40
                 "
               >
-                <div className="aspect-[3/4] relative rounded-2xl overflow-hidden">
+                <div className="aspect-[2/3] relative rounded-2xl overflow-hidden">
                   <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="px-2 pt-4 pb-2">

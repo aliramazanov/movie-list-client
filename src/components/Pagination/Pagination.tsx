@@ -2,11 +2,11 @@ import { PaginationProps } from "../../definitions";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
   return (
-    <div className="flex items-center justify-center gap-2 mt-8 mb-24">
+    <div className="flex items-center justify-center gap-2 mt-16 mb-4">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="text-white/70 hover:text-white disabled:text-white/30 disabled:cursor-not-allowed transition-colors font-semibold"
+        className="text-white/70 hover:text-white disabled:text-white/30 disabled:cursor-not-allowed transition-colors font-semibold mr-1"
       >
         Prev
       </button>
@@ -16,7 +16,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
           key={page}
           onClick={() => onPageChange(page)}
           className={`
-            w-8 h-8 rounded-md flex items-center justify-center text-white
+            w-8 h-8 rounded-md flex items-center justify-center m-1 p-1 text-white
             ${currentPage === page ? "bg-primary" : "hover:bg-white/10 transition-colors"}
           `}
         >
@@ -27,7 +27,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="text-white/70 hover:text-white disabled:text-white/30 disabled:cursor-not-allowed transition-colors font-semibold"
+        className="text-white/70 hover:text-white disabled:text-white/30 disabled:cursor-not-allowed transition-colors font-semibold ml-1"
       >
         Next
       </button>
