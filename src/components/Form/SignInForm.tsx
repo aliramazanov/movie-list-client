@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError, loginApi } from "../../services/api";
+import { moviesApi } from "../../services/movies";
 import { useAuthStore } from "../../store/authStore";
 import { storageUtils } from "../../utils/localStorage";
 import Primary from "../Button/Primary";
@@ -57,6 +58,7 @@ export const SignInForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
 
     const allFields = new Set(["username", "password"]);
     setTouchedFields(allFields);
@@ -70,7 +72,7 @@ export const SignInForm: React.FC = () => {
 
     if (!newErrors.username && !newErrors.password) {
       try {
-        const response = await loginApi(username, password);
+        const loginResponse = await loginApi(username, password);
 
         if (rememberMe) {
           storageUtils.setRememberMe(username, password);
@@ -78,8 +80,20 @@ export const SignInForm: React.FC = () => {
           storageUtils.clearRememberMe();
         }
 
-        login(response.token, response.user);
-        navigate("/my-movies");
+        login(loginResponse.token, loginResponse.user);
+
+        try {
+          const moviesData = await moviesApi.getMovies(loginResponse.token);
+
+          if (moviesData.totalMovies === 0) {
+            navigate("/empty");
+          } else {
+            navigate("/my-movies");
+          }
+        } catch (error) {
+          console.error("Failed to fetch movies:", error);
+          navigate("/empty");
+        }
       } catch (error) {
         const apiError = error as ApiError;
         setErrors((prev) => ({
