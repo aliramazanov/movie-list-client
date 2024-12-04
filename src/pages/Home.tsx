@@ -1,15 +1,10 @@
 import { motion } from "motion/react";
-import { WaveDecoration } from "../components/Additional/WaveDecoration";
 import { SignInForm } from "../components/Form/SignInForm";
+import { PageWrapper } from "../components/Wrapper/PageWrapper";
 
 const Home: React.FC = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-background flex flex-col items-center justify-center relative px-4 md:px-0"
-    >
+    <PageWrapper className="items-center justify-center px-4 md:px-0">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -26,8 +21,7 @@ const Home: React.FC = () => {
         </motion.h1>
         <SignInForm />
       </motion.div>
-      <WaveDecoration />
-    </motion.div>
+    </PageWrapper>
   );
 };
 

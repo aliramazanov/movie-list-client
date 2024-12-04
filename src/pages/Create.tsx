@@ -1,11 +1,10 @@
-import { ArrowDown } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
-import { WaveDecoration } from "../components/Additional/WaveDecoration";
 import Primary from "../components/Button/Primary";
+import { ImageDropzone } from "../components/DropZone/ImageDropZone";
 import { Input } from "../components/Input/Input";
+import { PageWrapper } from "../components/Wrapper/PageWrapper";
 import { FormErrors } from "../definitions";
 import { moviesApi } from "../services/movies";
 import { useAuthStore } from "../store/authStore";
@@ -69,28 +68,19 @@ const Create = () => {
     }));
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-      "image/gif": [],
-    },
-    maxSize: 5 * 1024 * 1024,
-    maxFiles: 1,
-    onDrop: (acceptedFiles, rejectedFiles) => {
-      if (rejectedFiles.length > 0) {
-        setErrors((prev) => ({
-          ...prev,
-          poster: "Please upload an image file (JPEG, PNG, or GIF) under 5MB",
-        }));
-        return;
-      }
-      if (acceptedFiles.length > 0) {
-        setSelectedFile(acceptedFiles[0]);
-        setErrors((prev) => ({ ...prev, poster: undefined }));
-      }
-    },
-  });
+  const handleDrop = (acceptedFiles: File[], rejectedFiles: unknown[]) => {
+    if (rejectedFiles.length > 0) {
+      setErrors((prev) => ({
+        ...prev,
+        poster: "Please upload an image file (JPEG, PNG, or GIF) under 5MB",
+      }));
+      return;
+    }
+    if (acceptedFiles.length > 0) {
+      setSelectedFile(acceptedFiles[0]);
+      setErrors((prev) => ({ ...prev, poster: undefined }));
+    }
+  };
 
   const validateForm = (): boolean => {
     const allFields = new Set(["title", "year"]);
@@ -138,12 +128,7 @@ const Create = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-background flex flex-col items-center justify-center relative px-4 md:px-8 lg:px-12"
-    >
+    <PageWrapper className="items-center justify-center px-4 md:px-8 lg:px-12">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -158,52 +143,12 @@ const Create = () => {
         </motion.h1>
 
         <div className="flex flex-col md:flex-row gap-8">
-          <motion.div variants={itemVariants} className="w-full md:w-[400px]">
-            <div
-              {...getRootProps()}
-              className={`
-                aspect-square
-                border-2 border-dashed rounded-lg
-                flex flex-col items-center justify-center
-                cursor-pointer
-                transition-all
-                hover:scale-[1.02]
-                active:scale-[0.98]
-                ${isDragActive ? "border-primary bg-input/50" : "border-input bg-input/30"}
-                ${errors.poster ? "border-error" : ""}
-              `}
-            >
-              <input {...getInputProps()} />
-              {selectedFile ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full h-full p-2">
-                  <img
-                    src={URL.createObjectURL(selectedFile)}
-                    alt="Preview"
-                    className="w-full h-full object-contain"
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  animate={{ y: isDragActive ? -10 : 0 }}
-                  className="flex flex-col items-center text-white/70"
-                >
-                  <ArrowDown className="w-8 h-8 mb-2" />
-                  <p className="text-body-regular text-center">
-                    {isDragActive ? "Drop image here" : "Drop an image here"}
-                  </p>
-                </motion.div>
-              )}
-            </div>
-            {errors.poster && (
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-error text-body-small mt-1"
-              >
-                {errors.poster}
-              </motion.p>
-            )}
-          </motion.div>
+          <ImageDropzone
+            selectedFile={selectedFile}
+            error={errors.poster}
+            onDrop={handleDrop}
+            className="w-full md:w-[400px]"
+          />
 
           <motion.div variants={itemVariants} className="flex-1 space-y-6">
             {errors.general && (
@@ -257,8 +202,7 @@ const Create = () => {
           </motion.div>
         </div>
       </motion.div>
-      <WaveDecoration />
-    </motion.div>
+    </PageWrapper>
   );
 };
 

@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { WaveDecoration } from "../components/Additional/WaveDecoration";
+import { useNavigate } from "react-router-dom";
 import Primary from "../components/Button/Primary";
+import { PageWrapper } from "../components/Wrapper/PageWrapper";
 
 const Empty: React.FC = () => {
   const navigate = useNavigate();
@@ -31,12 +31,7 @@ const Empty: React.FC = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-background flex flex-col items-center justify-center relative px-4 md:px-0"
-    >
+    <PageWrapper className="items-center justify-center px-4 md:px-0">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -53,8 +48,7 @@ const Empty: React.FC = () => {
           <Primary onClick={handleAddMovie}>Add a new movie</Primary>
         </motion.div>
       </motion.div>
-      <WaveDecoration />
-    </motion.div>
+    </PageWrapper>
   );
 };
 
