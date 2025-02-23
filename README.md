@@ -1,7 +1,7 @@
 # Movie List Client
 
-Live: https://cytric-movie-list-client.vercel.app/
-username: batman | password: 123456
+- Live: https://cytric-movie-list-client.vercel.app/
+- Credentials: username: batman | password: 123456
 
 ## Additional Details:
 
